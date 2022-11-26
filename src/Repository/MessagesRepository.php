@@ -101,5 +101,23 @@ class MessagesRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findDetailById($fromId)
+    {
+        $parameters = array(
+            'status' => 1,
+        );
+
+
+        $query = $this->createQueryBuilder("m")
+              ->select("m.sender_to as id, count(m.sender_to) as count")
+              ->andwhere("m.sender_from = :val")
+              ->setParameter('val', $fromId)
+              ->groupBy("m.sender_to")
+             // ->setParameters($parameters)
+              ->getQuery()->getResult();
+             return $query;
+       
+    }
     
 }

@@ -234,6 +234,6 @@ class __TwigTemplate_90ab7e43a2046652fa14b01e941ae8d6 extends Template
         {% block content %}{% endblock %}
     </body>
 </html>
-", "base.html.twig", "/home/vikas/Documents/demo_proj/symfony/Symfony-5-CRUD-app/templates/base.html.twig");
+", "base.html.twig", "/home/vikas/Documents/demo_proj/symfony/message-flow-service/templates/base.html.twig");
     }
 }

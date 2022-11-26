@@ -138,6 +138,6 @@ class __TwigTemplate_9a9cb40139bf4e7de973d3f22ca34e09 extends Template
         </div>
     </div>
 
-{% endblock %}", "index.html.twig", "/home/vikas/Documents/demo_proj/symfony/docker-symfony/templates/index.html.twig");
+{% endblock %}", "index.html.twig", "/home/vikas/Documents/demo_proj/symfony/message-flow-service/templates/index.html.twig");
     }
 }

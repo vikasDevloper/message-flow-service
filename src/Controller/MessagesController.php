@@ -31,6 +31,30 @@ class MessagesController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $objectManager = $this->getDoctrine()->getManager();
+        $uniqueId = $this->createMongoDbLikeId(time(), php_uname('n'), getmypid());
+        return $this->json([$uniqueId]);
+        foreach($data as $msgData){
+                    $sender_to = $msgData['data']['to'];
+                    $sender_from = $msgData['data']['from'];
+                    $content = $msgData['data']['message']['content'];
+                    $sender_id = $uniqueId;
+                    $message = new Messages;
+                    
+                    $message
+                    ->setSenderId($sender_id)
+                    ->setSenderTo($sender_to)
+                    ->setSenderFrom($sender_from)
+                    ->setContent($content);
+                    $this->messagesRepository->add($message);
+
+        }
+               
+        
+        $objectManager->flush();
+        return $this->json([
+            'message' => 'Welcome to your new controller!'
+    
+        ]);
 
         $sender_to = $data['sender_to'];
         $sender_from = $data['sender_from'];
@@ -48,10 +72,7 @@ class MessagesController extends AbstractController
 
         $objectManager->flush();
 
-    return $this->json([
-        'message' => 'Welcome to your new controller!'
-
-    ]);
+ 
         if (empty($firstName) || empty($lastName) || empty($email) || empty($phoneNumber)) {
             //throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
@@ -65,17 +86,14 @@ class MessagesController extends AbstractController
     }
 
     /**
-     * @Route("/messages/{id}/recipients", name="get_messages", methods={"GET"})
+     * @Route("/messages/{id}/recipients", name="/messages/{id}/recipientss", methods={"GET"})
      */
     public function get($id): JsonResponse
     {
-        $messagesRepository = $this->messagesRepository->findOneBy(['id' => $id]);
+        $messagesDetaails = $this->messagesRepository->findDetailById($id);
 
-        $data = [
-            'sender_id' => $messagesRepository->getSenderId(),
-            'sender_to' => $messagesRepository->getSenderTo(),
-            'sender_from' => $messagesRepository->getSenderFrom(),
-            'content' => $messagesRepository->getContent(),
+        $data['data'] = [
+            'recipients' => $messagesDetaails
         ];
 
         return new JsonResponse($data, Response::HTTP_OK);
@@ -100,14 +118,33 @@ class MessagesController extends AbstractController
 
     /**
      * @Route("/test2", name="test2")
-     * GET /messages/010cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients/8a7290c4-
-970d-4285-b18d-d62b581f2061
+     * GET /messages/010cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients/8a7290c4-970d-4285-b18d-d62b581f2061
      */
     public function test2(){
         return $this->json([
             'message' => 'Welcome to your new controller!'
   
         ]);
+    }
+
+    public function createMongoDbLikeId($timestamp, $hostname, $processId)
+    {
+	// Building binary data.
+        $bin = sprintf(
+            "%s%s%s%s",
+            pack('N', $timestamp),
+            substr(md5($hostname), 0, 3),
+            pack('n', $processId),
+            substr(str_shuffle('0123456789abcdjhfkjbwbmlk'), 1, 3)
+        );
+
+        // Convert binary to hex.
+        $result = '';
+        for ($i = 0; $i < 12; $i++) {
+            $result .= sprintf("%02x", ord($bin[$i]));
+        }
+
+        return $result;
     }
 
 }
