@@ -90,16 +90,22 @@ class MessagesRepository extends ServiceEntityRepository
     }
     */
 
-    public function findOneBySenderId($fromId,$toId)
+    public function findOneBySenderId($queyParams)
     {
         return $this->createQueryBuilder('m')
            ->select("m.sender_id as id,m.sender_from as from
            ,m.sender_to as to,m.content, m.created_at ,m.updated_at")
             ->orWhere('m.sender_from = :fromId')
             ->orWhere('m.sender_from = :toId')
-            ->setParameter('fromId', $fromId)
-            ->setParameter('toId', $toId)
+            ->orWhere('m.sender_from = :toId')
+            ->andWhere('m.created_at BETWEEN :dateFrom AND :dateTo')
+            ->setParameter('fromId', $queyParams["fromid"])
+            ->setParameter('toId', $queyParams["toId"])
+            ->setParameter('dateFrom', $queyParams["date_from"])
+            ->setParameter('dateTo', $queyParams["date_to"])
             ->orderBy('m.created_at', 'DESC')
+            ->setMaxResults($queyParams['per_page'])
+            ->setFirstResult($queyParams['page_number'])
            ->getQuery()->getResult();
         ;
     }

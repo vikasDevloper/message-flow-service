@@ -104,7 +104,11 @@ class MessagesController extends AbstractController
      */
     public function getBySenderID($id,$toId): JsonResponse
     {
-        $messagesRepository = $this->messagesRepository->findOneBySenderId($id,$toId);
+        $queyParams = $_GET;
+        $queyParams['fromid'] = $id; 
+        $queyParams['toId'] = $toId; 
+
+        $messagesRepository = $this->messagesRepository->findOneBySenderId($queyParams);
 
         $data['data'] = [
             'messages' => $messagesRepository,
