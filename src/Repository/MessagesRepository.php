@@ -67,9 +67,7 @@ class MessagesRepository extends ServiceEntityRepository
             ->setSenderId($sender_id)
             ->setSenderTo($sender_to)
             ->setSenderFrom($sender_from)
-            ->setContent($content)
-            ->setCreatedAt("2021-05-14")
-            ->setUpdatedAt("2021-05-14");
+            ->setContent($content);
 
         $this->manager->persist($newMessage);
         $this->manager->flush();
@@ -92,13 +90,17 @@ class MessagesRepository extends ServiceEntityRepository
     }
     */
 
-    
-    public function findOneBySenderId($fromId,$toId): ?Messages
+    public function findOneBySenderId($fromId,$toId)
     {
         return $this->createQueryBuilder('m')
-            ->orWhere(['m.sender_from = :fromId','m.sender_to = :toId'])
-            ->getQuery()
-            ->getOneOrNullResult()
+           ->select("m.sender_id as id,m.sender_from as from
+           ,m.sender_to as to,m.content, m.created_at ,m.updated_at")
+            ->orWhere('m.sender_from = :fromId')
+            ->orWhere('m.sender_from = :toId')
+            ->setParameter('fromId', $fromId)
+            ->setParameter('toId', $toId)
+            ->orderBy('m.created_at', 'DESC')
+           ->getQuery()->getResult();
         ;
     }
 

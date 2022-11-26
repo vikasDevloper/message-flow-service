@@ -30,12 +30,22 @@ class Messages
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $content;
+    private $content;  
 
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $sender_id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $created_at;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $updated_at;
 
     public function getId(): ?int
     {

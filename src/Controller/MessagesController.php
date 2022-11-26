@@ -102,15 +102,13 @@ class MessagesController extends AbstractController
        /**
      * @Route("/messages/{id}/recipients/{toId}", name="get_messages", methods={"GET"})
      */
-    public function getBySenderID($id): JsonResponse
+    public function getBySenderID($id,$toId): JsonResponse
     {
-        $messagesRepository = $this->messagesRepository->findOneBySenderId(['id' => $id]);
+        $messagesRepository = $this->messagesRepository->findOneBySenderId($id,$toId);
 
-        $data = [
-            'sender_id' => $messagesRepository->getSenderId(),
-            'sender_to' => $messagesRepository->getSenderTo(),
-            'sender_from' => $messagesRepository->getSenderFrom(),
-            'content' => $messagesRepository->getContent(),
+        $data['data'] = [
+            'messages' => $messagesRepository,
+            'count' =>count($messagesRepository)
         ];
 
         return new JsonResponse($data, Response::HTTP_OK);
