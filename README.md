@@ -20,29 +20,11 @@ Create a service that will store and control information about users & messages.
 General HTTP output format:
 
 
-Example - GET resource: GET http://127.0.0.1:8000/messages/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients
-```json
-{
-    "data": {
-        "recipients": [
-            {
-                "id": "8a7290c4-970d-4285-b18d-d62b581f2061",
-                "count": 1
-            }
-        ]
-    }
-}
-
-``` 
-
-
-
-``` 
-Example - POST messages: POST http://127.0.0.1:8000/messages
+POST messages: POST http://127.0.0.1:8000/messages
 
 JSON (any other field will be ignored):
 ```json
-[
+
     {
         "data": {
             "to": "8a7290c4-970d-4285-b18d-d62b581f2061",
@@ -61,7 +43,6 @@ JSON (any other field will be ignored):
             }
         }
     }
-]
 
 ``` 
 Response:
@@ -70,12 +51,29 @@ Response:
     "status": "Messages created!",
     "id": "638292d466633950a8306662"
 }
+
 ```
+
+Example - GET resource: GET http://127.0.0.1:8000/messages/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients
+```json
+{
+    "data": {
+        "recipients": [
+            {
+                "id": "8a7290c4-970d-4285-b18d-d62b581f2061",
+                "count": 1
+            }
+        ]
+    }
+}
+
+``` 
+
 Example - GET resource: GET 
 http://127.0.0.1:8000/messages/8a7290c4-970d-4285-b18d-d62b581f2061/recipients/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6?date_from=2022-11-27&date_to=2022-11-28&per_page=2&page_number=2
 
-JSON (any other field will be ignored):
-```json params
+JSON (Params):
+```json 
 {
    "date_from":2022-11-27,
    "date_to":2022-11-29,
