@@ -1,106 +1,163 @@
-<<<<<<< HEAD
-# message-service
+# Symfony 5 REST API for Messaging System
+
+Symfony 5 + ngnix + Mysql + doctrine
 
 
-We are Masters of Art company. We provide a service for people to buy and sell art via the internet.
-Recently we did some research and decided that people would like to communicate within our
-portal. We decided to develop this feature and we need a service to be created.
+## Table of Contents
++ [About](#about)
++ [Getting Started](#getting_started)
 
-Task
-Create a service that will store and control information about users&#39; messages.
 
-POST /messages:
+## About <a name = "about"></a>
+Symfony 5 skeleton to build REST APIs, inclusive of:
+
+
+This project is compliant with:
+Create a service that will store and control information about users & messages.
+![message_flow_service_api](https://user-images.githubusercontent.com/37538760/204134083-19461b0f-46a7-41d6-89b0-8889b40d94e1.gif)
+
+
+General HTTP output format:
+
+
+Example - GET resource: GET http://127.0.0.1:8000/messages/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients
+```json
 {
-&quot;data&quot;: {
-&quot;to&quot;: &quot;8a7290c4-970d-4285-b18d-d62b581f2061&quot;,
-&quot;from&quot;: &quot;010cc5dc-51ee-4da0-a5e3-9cd704fc9be6&quot;,
-&quot;message&quot;: {
-&quot;content&quot;: &quot;Hi! I am impressed with your painting, I want to
-propose more for it!&quot;
-}
-}
-}
-{
-&quot;data&quot;: {
-&quot;to&quot;: &quot;010cc5dc-51ee-4da0-a5e3-9cd704fc9be6&quot;,
-&quot;from&quot;: &quot;8a7290c4-970d-4285-b18d-d62b581f2061&quot;,
-&quot;message&quot;: {
-&quot;content&quot;: &quot;Wow, cool, how much?&quot;
-}
-}
+    "data": {
+        "recipients": [
+            {
+                "id": "8a7290c4-970d-4285-b18d-d62b581f2061",
+                "count": 1
+            }
+        ]
+    }
 }
 
-GET /messages/010cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients {
-&quot;data&quot;: {
-&quot;recipients&quot;: [
-{
-&quot;id&quot;: &quot;8a7290c4-970d-4285-b18d-d62b581f2061&quot;,
-&quot;count&quot;: 1
-}
+``` 
+
+
+
+``` 
+Example - POST messages: POST http://127.0.0.1:8000/messages
+
+JSON (any other field will be ignored):
+```json
+[
+    {
+        "data": {
+            "to": "8a7290c4-970d-4285-b18d-d62b581f2061",
+            "from": "110cc5dc-51ee-4da0-a5e3-9cd704fc9be6",
+            "message": {
+                "content": "Hi I'm Vikas, I am impressed with your painting, I want to propose more for it"
+            }
+        }
+    },
+    {
+        "data": {
+            "to": "110cc5dc-51ee-4da0-a5e3-9cd704fc9be6",
+            "from": "8a7290c4-970d-4285-b18d-d62b581f2061",
+            "message": {
+                "content": "Wow, cool,How Much"
+            }
+        }
+    }
 ]
 
-}
-}
-
-GET /messages/010cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients/8a7290c4-
-970d-4285-b18d-d62b581f2061
+``` 
+Response:
+```json
 {
-&quot;data&quot;: {
-&quot;messages&quot;: [
+    "status": "Messages created!",
+    "id": "638292d466633950a8306662"
+}
+```
+Example - GET resource: GET 
+http://127.0.0.1:8000/messages/8a7290c4-970d-4285-b18d-d62b581f2061/recipients/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6?date_from=2022-11-27&date_to=2022-11-28&per_page=2&page_number=2
+
+JSON (any other field will be ignored):
+```json params
 {
-&quot;id&quot;: &quot;b9f8e794-3b18-402b-907b-69dc1926248e&quot;,
-&quot;from&quot;: &quot;010cc5dc-51ee-4da0-a5e3-9cd704fc9be6&quot;,
-&quot;to&quot;: &quot;8a7290c4-970d-4285-b18d-d62b581f2061&quot;,
-&quot;content&quot;: &quot;Wow, cool, how much?&quot;,
-&quot;created_at&quot;: &quot;2022-01-20 15:13:00&quot;,
-&quot;updated_at&quot;: &quot;2022-01-20 15:13:00&quot;
-},
+   "date_from":2022-11-27,
+   "date_to":2022-11-29,
+   "per_page":10,
+   "page_number":1
+}
+
+``` 
+Response:
+```json
 {
-&quot;id&quot;: &quot;c4ab78e8-ebd3-4e34-af4f-69655c50221d&quot;,
-&quot;from&quot;: &quot;8a7290c4-970d-4285-b18d-d62b581f2061&quot;,
-&quot;to&quot;: &quot;010cc5dc-51ee-4da0-a5e3-9cd704fc9be6&quot;,
-&quot;content&quot;: &quot;Hi! I am impressed with your painting, I want to
-propose more for it!&quot;,
-&quot;created_at&quot;: &quot;2022-01-20 14:20:00&quot;,
-&quot;updated_at&quot;: &quot;2022-01-20 14:20:00&quot;
+    "data": {
+        "messages": [
+            {
+                "id": "638292d466633950a8306662",
+                "from": "110cc5dc-51ee-4da0-a5e3-9cd704fc9be6",
+                "to": "8a7290c4-970d-4285-b18d-d62b581f2061",
+                "content": "Hi I\u0027m Vikas, I am impressed with your painting, I want to propose more for it",
+                "created_at": "2022-11-27 03:57:32",
+                "updated_at": "2022-11-27 03:57:32"
+            },
+            {
+                "id": "638292d466633950a8306662",
+                "from": "8a7290c4-970d-4285-b18d-d62b581f2061",
+                "to": "110cc5dc-51ee-4da0-a5e3-9cd704fc9be6",
+                "content": "Wow, cool,How Much",
+                "created_at": "2022-11-27 03:57:32",
+                "updated_at": "2022-11-27 03:57:32"
+            }
+        ],
+        "count": 2
+    }
 }
-],
-&quot;count&quot;: 2
-}
-}
-
-Technical Requirements
-
-■ symfony
-■ doctrine
-■ postgresql
-■ docker
-■ nginx
-■ phpunit
-
-Additional:
-■ for GET /messages/&lt;id1&gt;/recipients/&lt;id1&gt;
-■ we need to have possibility to specify date_from, date_to as a query parameters to
-filter by created_at
-■ we need to have pagination options by passing per_page, page_number as a query
-parameters
-
-■ service should handle 50M records without (or close to without) performance degradation
-■ readme should contain the project description and guidance to run it via docker compose up
-■ functionality should be covered with functional tests
+```
 
 
+## Getting Started <a name = "getting_started"></a>
 
-Next, put your Symfony application into symfony folder and do not forget to add symfony.localhost in your /etc/hosts file.
+These instructions will get you a copy of the project up and running on your local machine 
+for development and testing purposes. 
 
-Make sure you adjust database_host in parameters.yml to the database container alias "db" (for Symfony < 4) Make sure you adjust DATABASE_URL in env to the database container alias "db" (for Symfony >= 4)
+### Prerequisites
 
-Then, run:
+What things you need to install the software and how to install them.
+- PHP 7.2.5+
+- [composer](https://getcomposer.org/download/)
+- [symfony](https://symfony.com/doc/current/setup.html)
+- docker (optional)
 
-$ docker-compose up
-You are done, you can visit your Symfony application on the following URL: http://symfony.localhost 
+### Installing
 
-Note : you can rebuild all Docker images by running:
+```bash
+git clone https://github.com/demartis/symfony5-rest-api/
+cd symfony5-rest-api
+cp .env.dist .env
+## edit .env if needed
+composer install
+symfony server:start
+```
+### Installing (alternative with Docker)
 
-$ docker-compose build
+```bash
+git clone https://github.com/vikasDevloper/message-flow-service.git
+cd message-flow-service
+cp .env.dist .env
+## edit .env if needed
+docker-compose build
+docker-compose up
+```
 
+
+### Running the example
+
+#### Install database
+```bash
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+```
+
+#### Get with Curl
+
+```bash
+curl -H 'content-type: application/json' -v -X POST http://127.0.0.1:8000/messages
+curl -H 'content-type: application/json' -v -X GET http://127.0.0.1:8000/messages/110cc5dc-51ee-4da0-a5e3-9cd704fc9be6/recipients
+```
