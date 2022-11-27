@@ -1,6 +1,6 @@
 <?php return array (
   0 => 'Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController',
-  1 => 'App\\Controller\\TodoController',
+  1 => 'App\\Controller\\MessagesController',
   2 => 'App\\Entity\\Messages',
   3 => 'App\\Entity\\Task',
   4 => 'Doctrine\\Bundle\\DoctrineBundle\\Controller\\ProfilerController',
@@ -36,4 +36,5 @@
   35 => 'Symfony\\Component\\HttpKernel\\Controller\\ErrorController',
   36 => 'Symfony\\Component\\HttpKernel\\Controller\\TraceableArgumentResolver',
   37 => 'Symfony\\Component\\HttpKernel\\Controller\\TraceableControllerResolver',
+  38 => 'Symfony\\Component\\Security\\Http\\Controller\\UserValueResolver',
 );

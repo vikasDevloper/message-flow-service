@@ -97,7 +97,6 @@ class MessagesRepository extends ServiceEntityRepository
            ,m.sender_to as to,m.content, m.created_at ,m.updated_at")
             ->orWhere('m.sender_from = :fromId')
             ->orWhere('m.sender_from = :toId')
-            ->orWhere('m.sender_from = :toId')
             ->andWhere('m.created_at BETWEEN :dateFrom AND :dateTo')
             ->setParameter('fromId', $queyParams["fromid"])
             ->setParameter('toId', $queyParams["toId"])

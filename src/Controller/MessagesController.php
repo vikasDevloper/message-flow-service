@@ -32,7 +32,7 @@ class MessagesController extends AbstractController
 
         $objectManager = $this->getDoctrine()->getManager();
         $uniqueId = $this->createMongoDbLikeId(time(), php_uname('n'), getmypid());
-        return $this->json([$uniqueId]);
+     
         foreach($data as $msgData){
                     $sender_to = $msgData['data']['to'];
                     $sender_from = $msgData['data']['from'];
@@ -44,45 +44,17 @@ class MessagesController extends AbstractController
                     ->setSenderId($sender_id)
                     ->setSenderTo($sender_to)
                     ->setSenderFrom($sender_from)
-                    ->setContent($content);
+                    ->setContent($content)
+                    ->setCreatedAt(date('Y-m-d H:i:s'))
+                    ->setUpdatedAt(date('Y-m-d H:i:s'));
                     $this->messagesRepository->add($message);
 
         }
                
         
         $objectManager->flush();
-        return $this->json([
-            'message' => 'Welcome to your new controller!'
-    
-        ]);
 
-        $sender_to = $data['sender_to'];
-        $sender_from = $data['sender_from'];
-        $content = $data['content'];
-        $sender_id = $data['sender_id'];
-        $newMessage = new Messages;
-
-        $newMessage
-        ->setSenderId($sender_id)
-        ->setSenderTo($sender_to)
-        ->setSenderFrom($sender_from)
-        ->setContent($content);
-
-         $objectManager->persist($newMessage);
-
-        $objectManager->flush();
-
- 
-        if (empty($firstName) || empty($lastName) || empty($email) || empty($phoneNumber)) {
-            //throw new NotFoundHttpException('Expecting mandatory parameters!');
-        }
-       
-        $this->messagesRepository->add($sender_to, $sender_from, $content, $sender_id);
-        return $this->json([
-            'message' => 'Welcome to your new controller!'
-  
-        ]);
-        return new JsonResponse(['status' => 'Messages created!'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Messages created!','id'=> $uniqueId], Response::HTTP_CREATED);
     }
 
     /**
@@ -107,7 +79,7 @@ class MessagesController extends AbstractController
         $queyParams = $_GET;
         $queyParams['fromid'] = $id; 
         $queyParams['toId'] = $toId; 
-
+        //var_dump($queyParams);
         $messagesRepository = $this->messagesRepository->findOneBySenderId($queyParams);
 
         $data['data'] = [

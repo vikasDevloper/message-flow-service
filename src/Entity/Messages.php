@@ -4,10 +4,19 @@ namespace App\Entity;
 
 use App\Repository\MessagesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiResource;
+
 
 /**
+ * * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="messages")
  * @ORM\Entity(repositoryClass=MessagesRepository::class)
+ * @ApiResource()
  */
+
 class Messages
 {
     /**
