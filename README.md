@@ -123,13 +123,14 @@ What things you need to install the software and how to install them.
 - PHP 7.2.5+
 - [composer](https://getcomposer.org/download/)
 - [symfony](https://symfony.com/doc/current/setup.html)
+- [Mysql]
 - docker (optional)
 
 ### Installing
 
 ```bash
-git clone https://github.com/demartis/symfony5-rest-api/
-cd symfony5-rest-api
+git clone https://github.com/vikasDevloper/message-flow-service.git
+cd message-flow-service
 cp .env.dist .env
 ## edit .env if needed
 composer install
