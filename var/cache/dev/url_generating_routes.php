@@ -7,6 +7,7 @@ return [
     '/messages/{id}/recipientss' => [['id'], ['_controller' => 'App\\Controller\\MessagesController::get'], [], [['text', '/recipients'], ['variable', '/', '[^/]++', 'id', true], ['text', '/messages']], [], []],
     'get_messages' => [['id', 'toId'], ['_controller' => 'App\\Controller\\MessagesController::getBySenderID'], [], [['variable', '/', '[^/]++', 'toId', true], ['text', '/recipients'], ['variable', '/', '[^/]++', 'id', true], ['text', '/messages']], [], []],
     'test2' => [[], ['_controller' => 'App\\Controller\\MessagesController::test2'], [], [['text', '/test2']], [], []],
+    'sample' => [[], ['_controller' => 'App\\Controller\\SampleController::sample'], [], [['text', '/sample']], [], []],
     'api_genid' => [['id'], ['_controller' => 'api_platform.action.not_exposed', '_api_respond' => 'true'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/api/.well-known/genid']], [], []],
     'api_entrypoint' => [['index', '_format'], ['_controller' => 'api_platform.action.entrypoint', '_format' => '', '_api_respond' => 'true', 'index' => 'index'], ['index' => 'index'], [['variable', '.', '[^/]++', '_format', true], ['variable', '/', 'index', 'index', true], ['text', '/api']], [], []],
     'api_doc' => [['_format'], ['_controller' => 'api_platform.action.documentation', '_format' => '', '_api_respond' => 'true'], [], [['variable', '.', '[^/]++', '_format', true], ['text', '/api/docs']], [], []],

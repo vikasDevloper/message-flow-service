@@ -78,6 +78,10 @@ return [[
 '[C]App%5CController%5CMessagesController%23createMongoDbLikeId' => 1,
 'App%5CController%5CMessagesController%24messagesRepository' => 0,
 '[C]App%5CController%5CMessagesController%24messagesRepository' => 1,
+'App%5CController%5CSampleController' => 0,
+'[C]App%5CController%5CSampleController' => 1,
+'App%5CController%5CSampleController%23sample' => 0,
+'[C]App%5CController%5CSampleController%23sample' => 1,
 'App%5CEntity%5CMessages' => 6,
 '[C]App%5CEntity%5CMessages' => 1,
 'App%5CEntity%5CMessages%23getId' => 0,
@@ -626,7 +630,7 @@ return [[
 ], [
 
 0 => [],
-1 => 1669494149,
+1 => 1669562336,
 2 => static function () {
     return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
         $o = [
@@ -733,18 +737,29 @@ return [[
 6 => static function () {
     return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
         $o = [
-            clone (\Symfony\Component\VarExporter\Internal\Registry::$prototypes['Doctrine\\ORM\\Mapping\\Entity'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Mapping\\Entity')),
+            clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['Doctrine\\ORM\\Mapping\\Entity'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Mapping\\Entity')),
+            clone ($p['Doctrine\\ORM\\Mapping\\HasLifecycleCallbacks'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Mapping\\HasLifecycleCallbacks')),
+            clone ($p['Doctrine\\ORM\\Mapping\\Table'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Mapping\\Table')),
+            clone $p['Doctrine\\ORM\\Mapping\\Entity'],
+            clone ($p['ApiPlatform\\Core\\Annotation\\ApiResource'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('ApiPlatform\\Core\\Annotation\\ApiResource')),
         ],
         null,
         [
             'stdClass' => [
+                'name' => [
+                    2 => 'messages',
+                ],
                 'repositoryClass' => [
-                    'App\\Repository\\MessagesRepository',
+                    3 => 'App\\Repository\\MessagesRepository',
                 ],
             ],
         ],
         [
             $o[0],
+            $o[1],
+            $o[2],
+            $o[3],
+            $o[4],
         ],
         []
     );
