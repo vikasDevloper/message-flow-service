@@ -1,6 +1,6 @@
 # Symfony 5 REST API for Messaging System
 
-Symfony 5 + ngnix + Mysql + doctrine
+Symfony 5 + ngnix + Mysql + doctrine + RabiitMQ + Docker
 
 
 ## Table of Contents
@@ -123,6 +123,8 @@ What things you need to install the software and how to install them.
 - [symfony](https://symfony.com/doc/current/setup.html)
 - [Mysql]
 - docker (optional)
+- [RabitMQ]
+
 
 ### Installing
 
@@ -141,6 +143,7 @@ git clone https://github.com/vikasDevloper/message-flow-service.git
 cd message-flow-service
 cp .env.dist .env
 ## edit .env if needed
+
 docker-compose build
 docker-compose up
 ```
