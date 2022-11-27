@@ -11,6 +11,8 @@ use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\SampleMessage;
 
 
 class MessagesController extends AbstractController
@@ -25,38 +27,19 @@ class MessagesController extends AbstractController
     /**
      * @Route("/messages", name="messages", methods={"POST"})
      */
-    public function messages(Request $request): JsonResponse
+    public function messages(MessageBusInterface $bus,Request $request): JsonResponse
     {
- 
-        $data = json_decode($request->getContent(), true);
-
-        $objectManager = $this->getDoctrine()->getManager();
-        $uniqueId = $this->createMongoDbLikeId(time(), php_uname('n'), getmypid());
-     
-        foreach($data as $msgData){
-                    $sender_to = $msgData['data']['to'];
-                    $sender_from = $msgData['data']['from'];
-                    $content = $msgData['data']['message']['content'];
-                    $sender_id = $uniqueId;
-                    $message = new Messages;
-                    
-                    $message
-                    ->setSenderId($sender_id)
-                    ->setSenderTo($sender_to)
-                    ->setSenderFrom($sender_from)
-                    ->setContent($content)
-                    ->setCreatedAt(date('Y-m-d H:i:s'))
-                    ->setUpdatedAt(date('Y-m-d H:i:s'));
-                    $this->messagesRepository->add($message);
-
-        }
-               
         
-        $objectManager->flush();
+        $data = json_decode($request->getContent(), true);
+        $message = new SampleMessage($data);
+        
+        // Dispatch message in Queue
+        $bus->dispatch($message);
 
-        return new JsonResponse(['status' => 'Messages created!','id'=> $uniqueId], Response::HTTP_CREATED);
+        return new JsonResponse(['status' =>'Message with content was published',"data"=>$data]);
     }
 
+    
     /**
      * @Route("/messages/{id}/recipients", name="/messages/{id}/recipientss", methods={"GET"})
      */

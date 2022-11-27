@@ -28,7 +28,7 @@ class ValidationConfig
     private $autoMapping;
     
     /**
-     * @default false
+     * @default true
      * @param ParamConfigurator|bool $value
      * @return $this
      */
