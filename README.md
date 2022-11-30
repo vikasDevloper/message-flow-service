@@ -14,7 +14,8 @@ Symfony 5 skeleton to build REST APIs, inclusive of:
 
 This project is compliant with:
 Create a service that will store and control information about users & messages.
-![message_flow_service_api](https://user-images.githubusercontent.com/37538760/204134083-19461b0f-46a7-41d6-89b0-8889b40d94e1.gif)
+
+![message_flow_service_with_async_queue](https://user-images.githubusercontent.com/37538760/204877571-12f5413d-b8c6-4538-9fbe-bf70c8d87d7a.gif)
 
 
 General HTTP output format:
