@@ -12,8 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class SampleController extends AbstractController
 {
-    #[Route('/sample', name: 'sample')]
-    public function sample(MessageBusInterface $bus): Response
+    #[Route('/sample2', name: 'sample2')]
+    public function sample2(MessageBusInterface $bus): Response
     {
         $message = new SampleMessage('content');
         $bus->dispatch($message);

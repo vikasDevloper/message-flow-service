@@ -23,7 +23,7 @@ class SerializerConfig
     private $mapping;
     
     /**
-     * @default false
+     * @default true
      * @param ParamConfigurator|bool $value
      * @return $this
      */

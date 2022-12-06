@@ -396,6 +396,7 @@
     <service id="App\Message\SampleMessage" class="App\Message\SampleMessage" autowire="true" autoconfigure="true"/>
     <service id="App\MessageHandler\SampleMessangeHandler" class="App\MessageHandler\SampleMessangeHandler" autowire="true" autoconfigure="true">
       <tag name="messenger.message_handler"/>
+      <argument type="service" id="App\Repository\MessagesRepository"/>
     </service>
     <service id="App\Repository\MessagesRepository" class="App\Repository\MessagesRepository" autowire="true" autoconfigure="true">
       <tag name="doctrine.repository_service"/>
@@ -853,7 +854,9 @@
       <argument type="service" id="messenger.receiver_locator"/>
       <argument type="service" id="debug.event_dispatcher"/>
       <argument type="service" id="logger" on-invalid="null"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument>async</argument>
+      </argument>
       <call method="setName">
         <argument>messenger:consume</argument>
       </call>
@@ -865,7 +868,9 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="messenger.receiver_locator"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument>async</argument>
+      </argument>
       <call method="setName">
         <argument>messenger:setup-transports</argument>
       </call>
@@ -3221,8 +3226,12 @@
       <argument>null</argument>
     </service>
     <service id="messenger.senders_locator" class="Symfony\Component\Messenger\Transport\Sender\SendersLocator">
-      <argument type="collection"/>
-      <argument type="service" id="api_platform.filter_locator"/>
+      <argument type="collection">
+        <argument key="App\Message\SampleMessage" type="collection">
+          <argument>async</argument>
+        </argument>
+      </argument>
+      <argument type="service" id=".service_locator.B4dyivW"/>
     </service>
     <service id="messenger.middleware.send_message" class="Symfony\Component\Messenger\Middleware\SendMessageMiddleware">
       <tag name="monolog.logger" channel="messenger"/>
@@ -3231,6 +3240,11 @@
       <call method="setLogger">
         <argument type="service" id="logger" on-invalid="ignore"/>
       </call>
+    </service>
+    <service id="messenger.transport.symfony_serializer" class="Symfony\Component\Messenger\Transport\Serialization\Serializer">
+      <argument type="service" id="serializer"/>
+      <argument>json</argument>
+      <argument type="collection"/>
     </service>
     <service id="serializer.normalizer.flatten_exception" class="Symfony\Component\Messenger\Transport\Serialization\Normalizer\FlattenExceptionNormalizer">
       <tag name="serializer.normalizer" priority="-880"/>
@@ -3258,10 +3272,19 @@
     </service>
     <service id="messenger.receiver_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument key="async" type="service_closure" id="messenger.transport.async"/>
+        <argument key="messenger.transport.async" type="service_closure" id="messenger.transport.async"/>
+      </argument>
     </service>
     <service id="messenger.transport_factory" class="Symfony\Component\Messenger\Transport\TransportFactory">
       <argument type="tagged_iterator" tag="messenger.transport_factory"/>
+    </service>
+    <service id="messenger.transport.amqp.factory" class="Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpTransportFactory">
+      <tag name="messenger.transport_factory"/>
+    </service>
+    <service id="messenger.transport.redis.factory" class="Symfony\Component\Messenger\Bridge\Redis\Transport\RedisTransportFactory">
+      <tag name="messenger.transport_factory"/>
     </service>
     <service id="messenger.transport.sync.factory" class="Symfony\Component\Messenger\Transport\Sync\SyncTransportFactory">
       <tag name="messenger.transport_factory"/>
@@ -3271,9 +3294,15 @@
       <tag name="messenger.transport_factory"/>
       <tag name="kernel.reset" method="reset"/>
     </service>
+    <service id="messenger.transport.sqs.factory" class="Symfony\Component\Messenger\Bridge\AmazonSqs\Transport\AmazonSqsTransportFactory">
+      <argument type="service" id="logger" on-invalid="ignore"/>
+    </service>
+    <service id="messenger.transport.beanstalkd.factory" class="Symfony\Component\Messenger\Bridge\Beanstalkd\Transport\BeanstalkdTransportFactory"/>
     <service id="messenger.retry_strategy_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument key="async" type="service_closure" id="messenger.retry.multiplier_retry_strategy.async"/>
+      </argument>
     </service>
     <service id="messenger.retry.abstract_multiplier_retry_strategy" class="Symfony\Component\Messenger\Retry\MultiplierRetryStrategy" abstract="true">
       <argument type="abstract">max retries</argument>
@@ -3284,7 +3313,7 @@
     <service id="messenger.retry.send_failed_message_for_retry_listener" class="Symfony\Component\Messenger\EventListener\SendFailedMessageForRetryListener">
       <tag name="kernel.event_subscriber"/>
       <tag name="monolog.logger" channel="messenger"/>
-      <argument type="service" id="api_platform.filter_locator"/>
+      <argument type="service" id=".service_locator.B4dyivW"/>
       <argument type="service" id="messenger.retry_strategy_locator"/>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <argument type="service" id="debug.event_dispatcher"/>
@@ -3318,6 +3347,28 @@
         <argument type="service" id="messenger.middleware.failed_message_processing_middleware"/>
         <argument type="service" id="messenger.middleware.send_message"/>
         <argument type="service" id="messenger.bus.default.middleware.handle_message"/>
+      </argument>
+    </service>
+    <service id="messenger.transport.async" class="Symfony\Component\Messenger\Transport\TransportInterface">
+      <tag name="messenger.receiver" alias="async" is_failure_transport=""/>
+      <argument>%env(MESSENGER_TRANSPORT_DSN)%</argument>
+      <argument type="collection">
+        <argument key="transport_name">async</argument>
+      </argument>
+      <argument type="service" id="messenger.transport.native_php_serializer"/>
+      <factory service="messenger.transport_factory" method="createTransport"/>
+    </service>
+    <service id="messenger.retry.multiplier_retry_strategy.async" class="Symfony\Component\Messenger\Retry\MultiplierRetryStrategy">
+      <argument>3</argument>
+      <argument>1000</argument>
+      <argument>2</argument>
+      <argument>0</argument>
+    </service>
+    <service id=".service_locator.B4dyivW" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="async" type="service_closure" id="messenger.transport.async"/>
+        <argument key="messenger.transport.async" type="service_closure" id="messenger.transport.async"/>
       </argument>
     </service>
     <service id="maker.file_manager" class="Symfony\Bundle\MakerBundle\FileManager">
@@ -6658,17 +6709,19 @@
         <argument key="bus" type="service_closure" id="messenger.bus.default"/>
       </argument>
     </service>
-    <service id=".service_locator.Aw7ChxW" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.mSyO8DH" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="App\Controller\SampleController::sample" type="service_closure" id=".service_locator.9lIBC3p"/>
+        <argument key="App\Controller\MessagesController::messages" type="service_closure" id=".service_locator.9lIBC3p"/>
+        <argument key="App\Controller\SampleController::sample2" type="service_closure" id=".service_locator.9lIBC3p"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="App\Kernel::terminate" type="service_closure" id=".service_locator.bRdave9"/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel::terminate" type="service_closure" id=".service_locator.bRdave9"/>
-        <argument key="App\Controller\SampleController:sample" type="service_closure" id=".service_locator.9lIBC3p"/>
+        <argument key="App\Controller\MessagesController:messages" type="service_closure" id=".service_locator.9lIBC3p"/>
+        <argument key="App\Controller\SampleController:sample2" type="service_closure" id=".service_locator.9lIBC3p"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel:terminate" type="service_closure" id=".service_locator.bRdave9"/>
@@ -7049,12 +7102,12 @@
       <argument type="service" id="security.token_storage"/>
     </service>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
-      <argument type="service" id=".service_locator.Aw7ChxW"/>
+      <argument type="service" id=".service_locator.mSyO8DH"/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
-      <argument type="service" id=".service_locator.Aw7ChxW"/>
+      <argument type="service" id=".service_locator.mSyO8DH"/>
     </service>
     <service id=".doctrine.orm.default_metadata_driver.inner" class="Doctrine\Persistence\Mapping\Driver\MappingDriverChain">
       <call method="addDriver">
@@ -7863,8 +7916,10 @@
     <service id="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" alias="security.csrf.token_manager"/>
     <service id="Symfony\Component\Validator\Validator\ValidatorInterface" alias="validator"/>
     <service id="validator.mapping.class_metadata_factory" alias="validator"/>
+    <service id="Symfony\Component\Messenger\Transport\Serialization\SerializerInterface" alias="messenger.transport.native_php_serializer"/>
     <service id="messenger.default_bus" alias="messenger.bus.default" public="true"/>
     <service id="Symfony\Component\Messenger\MessageBusInterface" alias="messenger.bus.default"/>
+    <service id="messenger.default_serializer" alias="messenger.transport.native_php_serializer"/>
     <service id="sensio_framework_extra.converter.doctrine.orm.expression_language" alias="sensio_framework_extra.converter.doctrine.orm.expression_language.default"/>
     <service id="sensio_framework_extra.security.expression_language" alias="sensio_framework_extra.security.expression_language.default"/>
     <service id="Twig_Environment" alias="twig"/>
@@ -8014,7 +8069,7 @@
     <service id="ApiPlatform\Core\Api\IdentifiersExtractorInterface" alias="api_platform.identifiers_extractor.cached"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.0GV1BZZ" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.Aw7ChxW"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.mSyO8DH"/>
     <service id="session" alias=".session.do-not-use" public="true">
       <deprecated package="symfony/framework-bundle" version="5.3">The "%alias_id%" service and "SessionInterface" alias are deprecated, use "$requestStack-&gt;getSession()" instead.</deprecated>
     </service>
@@ -8022,6 +8077,8 @@
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="api_platform.name_converter" alias="serializer.name_converter.metadata_aware"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
+    <service id=".service_locator.6DxUFLS" alias="messenger.receiver_locator"/>
+    <service id=".service_locator.27KOu4H" alias="messenger.retry_strategy_locator"/>
     <service id=".service_locator.bnaLdkn" alias="api_platform.serializer_locator"/>
     <service id=".service_locator.Xbsa8iG" alias="api_platform.filter_locator"/>
     <service id=".service_locator.wKF4yn1" alias=".service_locator.anofQPJ"/>

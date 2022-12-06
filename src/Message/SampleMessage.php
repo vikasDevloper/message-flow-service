@@ -6,11 +6,11 @@ namespace App\Message;
 
 final class SampleMessage
 {
-    public function __construct(private string $content)
+    public function __construct(private array $content)
     {
     }
 
-    public function getContent(): string
+    public function getContent(): array
     {
         return $this->content;
     }
